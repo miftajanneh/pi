@@ -1,16 +1,23 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login
 
-def register(request):
+from .forms import MyUserCreationForm
+
+
+def home(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
         if form.is_valid():
-            new_user = form.save()
+            form.save()
+            user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data["password1"]
+            )
+            login(request, user)
             return HttpResponseRedirect("/admin/")
     else:
-        form = UserCreationForm()
-    return render(request, "registration/register.html", {
+        form = MyUserCreationForm()
+    return render(request, "home.html", {
         'form': form,
     })
