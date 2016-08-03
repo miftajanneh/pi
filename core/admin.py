@@ -20,6 +20,57 @@ class KunjunganAdmin(admin.ModelAdmin):
     ]
 
 
+class KBAdmin(admin.ModelAdmin):
+    list_display = [
+        '__str__',
+        'tanggal_mulai_pemakaian',
+        'tanggal_kontrol'
+    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return super(KBAdmin, self).get_readonly_fields(request, obj)
+        return (
+            'pasien',
+            'tanggal_mulai_pemakaian',
+            'tanggal_kontrol',
+            'alat_kb'
+        )
+
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return KB.objects.all()
+        return KB.objects.filter(pasien=request.user)
+
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        if not self.get_queryset(request).filter(id=object_id).exists():
+            return HttpResponseRedirect(
+                reverse('admin:core_kb_changelist'))
+
+        return super(KBAdmin, self).change_view(request, object_id,
+                                                         form_url,
+                                                         extra_context)
+
+    def delete_view(self, request, object_id, extra_context=None):
+        if not self.get_queryset(request).filter(id=object_id).exists():
+            return HttpResponseRedirect(
+                reverse('admin:core_kb_changelist'))
+
+        return super(KBAdmin, self).delete_view(request, object_id,
+                                                         extra_context)
+
+    def history_view(self, request, object_id, extra_context=None):
+        if not self.get_queryset(request).filter(id=object_id).exists():
+            return HttpResponseRedirect(
+                reverse('admin:core_kb_changelist'))
+
+        return super(KBAdmin, self).history_view(
+            request, object_id,
+            extra_context
+        )
+
+
 class PendaftaranAdmin(admin.ModelAdmin):
     form = PendaftaranAdminForm
     list_display = [
@@ -98,7 +149,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 post_save.connect(create_user_profile, sender=User)
 
 admin.site.register(Kunjungan, KunjunganAdmin)
-admin.site.register(KB)
+admin.site.register(KB, KBAdmin)
 admin.site.register(AlatKB)
 admin.site.register(Obat)
 admin.site.register(Pendaftaran, PendaftaranAdmin)
