@@ -60,12 +60,18 @@ TUJUAN_CHOICES = (
     ('konsultasi ibu dan anak', 'konsultasi ibu dan anak')
 )
 
+IBU_ATAU_ANAK_CHOICES = (
+    ('ibu', 'ibu'),
+    ('anak', 'anak')
+)
+
 
 class Pendaftaran(models.Model):
     pasien = models.ForeignKey(User)
     tanggal = models.DateField()
     tujuan_kunjungan = models.CharField(max_length=100, choices=TUJUAN_CHOICES)
     urutan_kunjungan = models.IntegerField()
+    ibu_atau_anak = models.CharField(max_length=30, choices=IBU_ATAU_ANAK_CHOICES)
 
     class Meta:
         verbose_name_plural = 'Pendaftaran'
@@ -86,7 +92,10 @@ JENIS_KELAMIN = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    nama = models.CharField(max_length=100, null=True, blank=True)
+    ibu_atau_anak = models.CharField(max_length=100, null=True, blank=True, choices=IBU_ATAU_ANAK_CHOICES)
+    nama_ibu = models.CharField(max_length=100, null=True, blank=True)
+    nama_anak = models.CharField(max_length=100, null=True, blank=True)
+    nama_ayah = models.CharField(max_length=100, null=True, blank=True)
     jenis_kelamin = models.CharField(
         max_length=30, choices=JENIS_KELAMIN, null=True, blank=True
     )
@@ -95,7 +104,8 @@ class UserProfile(models.Model):
     tanggal_lahir = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.nama
+        return self.nama_ibu
+
 
 class Imunisasi(models.Model):
     pasien = models.ForeignKey(User)

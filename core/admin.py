@@ -2,11 +2,9 @@ import datetime
 
 from django.contrib import admin
 from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_save
 
-from .models import Kunjungan, KB, AlatKB, Obat, Pendaftaran, UserProfile, Imunisasi
+from .models import KB, AlatKB, Obat, Pendaftaran, UserProfile, Imunisasi
 from .forms import PendaftaranAdminForm
 
 
@@ -141,11 +139,6 @@ class PendaftaranAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     pass
 
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-       profile, created = UserProfile.objects.get_or_create(user=instance)
-
-post_save.connect(create_user_profile, sender=User)
 
 class ImunisasiAdmin(admin.ModelAdmin):
     list_display = [
@@ -172,7 +165,7 @@ class ImunisasiAdmin(admin.ModelAdmin):
                     extra_context=None):
         if not self.get_queryset(request).filter(id=object_id).exists():
             return HttpResponseRedirect(
-                reverse('admin:core_Imunisasi_changelist'))
+                reverse('admin:core_imunisasi_changelist'))
 
         return super(ImunisasiAdmin, self).change_view(request, object_id,
                                                 form_url,
@@ -181,7 +174,7 @@ class ImunisasiAdmin(admin.ModelAdmin):
     def delete_view(self, request, object_id, extra_context=None):
         if not self.get_queryset(request).filter(id=object_id).exists():
             return HttpResponseRedirect(
-                reverse('admin:core_Imunisasi_changelist'))
+                reverse('admin:core_imunisasi_changelist'))
 
         return super(ImunisasiAdmin, self).delete_view(request, object_id,
                                                 extra_context)
@@ -189,14 +182,13 @@ class ImunisasiAdmin(admin.ModelAdmin):
     def history_view(self, request, object_id, extra_context=None):
         if not self.get_queryset(request).filter(id=object_id).exists():
             return HttpResponseRedirect(
-                reverse('admin:core_Imunisasi_changelist'))
+                reverse('admin:core_imunisasi_changelist'))
 
         return super(ImunisasiAdmin, self).history_view(
             request, object_id,
             extra_context
         )
 
-admin.site.register(Kunjungan, KunjunganAdmin)
 admin.site.register(KB, KBAdmin)
 admin.site.register(AlatKB)
 admin.site.register(Obat)
