@@ -71,7 +71,6 @@ class Pendaftaran(models.Model):
     tanggal = models.DateField()
     tujuan_kunjungan = models.CharField(max_length=100, choices=TUJUAN_CHOICES)
     urutan_kunjungan = models.IntegerField()
-    ibu_atau_anak = models.CharField(max_length=30, choices=IBU_ATAU_ANAK_CHOICES)
 
     class Meta:
         verbose_name_plural = 'Pendaftaran'
