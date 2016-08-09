@@ -87,17 +87,8 @@ class PendaftaranAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.pasien = request.user
 
-        # urutan
-        today_min = datetime.datetime.combine(
-            datetime.date.today(),
-            datetime.time.min
-        )
-        today_max = datetime.datetime.combine(
-            datetime.date.today(),
-            datetime.time.max
-        )
         pendaftaran_count = Pendaftaran.objects.filter(
-            tanggal__range=(today_min, today_max)
+            tanggal=obj.tanggal
         )
         urutan_kunjungan = len(pendaftaran_count) + 1
         obj.urutan_kunjungan = urutan_kunjungan
