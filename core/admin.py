@@ -128,7 +128,15 @@ class PendaftaranAdmin(admin.ModelAdmin):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = [
+        '__str__',
+        'ibu_atau_anak',
+        'nama_ibu',
+        'nama_anak',
+        'nama_ayah',
+        'jenis_kelamin',
+        'tanggal_lahir'
+    ]
 
 
 class ImunisasiAdmin(admin.ModelAdmin):
@@ -137,6 +145,9 @@ class ImunisasiAdmin(admin.ModelAdmin):
         'tanggal',
         'jenis_imunisasi'
         ]
+    list_filter = [
+        'tanggal'
+    ]
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:

@@ -91,7 +91,8 @@ JENIS_KELAMIN = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    ibu_atau_anak = models.CharField(max_length=100, null=True, blank=True, choices=IBU_ATAU_ANAK_CHOICES)
+    ibu_atau_anak = models.CharField(max_length=100, null=True, blank=True,
+                                     choices=IBU_ATAU_ANAK_CHOICES)
     nama_ibu = models.CharField(max_length=100, null=True, blank=True)
     nama_anak = models.CharField(max_length=100, null=True, blank=True)
     nama_ayah = models.CharField(max_length=100, null=True, blank=True)
