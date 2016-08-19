@@ -1,10 +1,9 @@
-import datetime
-
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
-from .models import KB, AlatKB, Obat, Pendaftaran, UserProfile, Imunisasi
+from .models import KB, AlatKB, Pendaftaran, UserProfile, Imunisasi, Melahirkan
 from .forms import PendaftaranAdminForm
 
 
@@ -92,7 +91,31 @@ class PendaftaranAdmin(admin.ModelAdmin):
         )
         urutan_kunjungan = len(pendaftaran_count) + 1
         obj.urutan_kunjungan = urutan_kunjungan
+
+        pendaftaran = obj
+
+        melahirkan = False
+        kamar = None
+        if pendaftaran.tujuan_kunjungan == 'melahirkan':
+            melahirkan = True
+            melahirkans = Melahirkan.objects.filter(sudah_pulang=False)
+            print(melahirkans)
+            if not melahirkans:
+                kamar = 1
+
+            if len(melahirkans) == 1:
+                if melahirkans[0].kamar == '1':
+                    kamar = 2
+                if melahirkans[0].kamar == '2':
+                    kamar = 1
+
+            if len(melahirkans) == 2:
+                raise ValidationError('kamar sudah penuh')
+
         obj.save()
+        if melahirkan:
+            assert kamar
+            Melahirkan.objects.create(kamar=kamar, pendaftaran=obj)
 
     def get_queryset(self, request):
         if request.user.is_superuser:
@@ -191,9 +214,17 @@ class ImunisasiAdmin(admin.ModelAdmin):
             extra_context
         )
 
+
+class AlatKBAdmin(admin.ModelAdmin):
+    list_display = [
+        'nama',
+        'periode_pemakaian',
+        'id'
+    ]
+
 admin.site.register(KB, KBAdmin)
-admin.site.register(AlatKB)
-admin.site.register(Obat)
+admin.site.register(AlatKB, AlatKBAdmin)
 admin.site.register(Pendaftaran, PendaftaranAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Imunisasi, ImunisasiAdmin)
+admin.site.register(Melahirkan)

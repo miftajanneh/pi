@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
-from .models import Pendaftaran, UserProfile, JENIS_KELAMIN, IBU_ATAU_ANAK_CHOICES
+from .models import Pendaftaran, UserProfile, JENIS_KELAMIN, IBU_ATAU_ANAK_CHOICES, Melahirkan
 
 
 class PendaftaranAdminForm(forms.ModelForm):
@@ -15,6 +15,11 @@ class PendaftaranAdminForm(forms.ModelForm):
     def clean(self):
         if self.cleaned_data.get('tanggal') < datetime.datetime.today().date():
             raise forms.ValidationError('Tanggal tidak boleh kemarin')
+
+        if self.cleaned_data.get('tujuan_kunjungan') == 'melahirkan':
+            if len(Melahirkan.objects.filter(sudah_pulang=False)) == 2:
+                raise forms.ValidationError('kamar sudah penuh')
+
         return self.cleaned_data
 
 

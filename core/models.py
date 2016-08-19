@@ -1,4 +1,7 @@
+import datetime
+
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -28,7 +31,7 @@ class Kunjungan(models.Model):
 
 
 class AlatKB(models.Model):
-    nama = models.CharField(max_length=30)
+    nama = models.CharField(max_length=30, unique=True)
     periode_pemakaian = models.IntegerField(help_text='dalam hari')
 
     class Meta:
@@ -42,7 +45,13 @@ class KB(models.Model):
     pasien = models.ForeignKey(User)
     alat_kb = models.ForeignKey(AlatKB)
     tanggal_mulai_pemakaian = models.DateField()
-    tanggal_kontrol = models.DateField()
+    tanggal_kontrol = models.DateField(blank=True)
+
+    def save(self, *args, **kwargs):
+        periode_pemakaian = self.alat_kb.periode_pemakaian
+        self.tanggal_kontrol = \
+            self.tanggal_mulai_pemakaian + datetime.timedelta(days=periode_pemakaian)
+        super(KB, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = 'KB'
@@ -82,6 +91,33 @@ class Pendaftaran(models.Model):
             self.tujuan_kunjungan
         )
 
+    def clean(self):
+        if self.tujuan_kunjungan == 'Melahirkan':
+            melahirkans = Melahirkan.objects.filter(sudah_pulang=False)
+            if not melahirkans:
+                Melahirkan.objects.create(kamar='1', pendaftaran=self)
+                return super(Pendaftaran, self).clean()
+            if len(melahirkans) == 1:
+                if melahirkans[0].kamar == '1':
+                    Melahirkan.objects.create(kamar='2', pendaftaran=self)
+                    return super(Pendaftaran, self).clean()
+                if melahirkans[0].kamar == '2':
+                    Melahirkan.objects.create(kamar='1', pendaftaran=self)
+                    return super(Pendaftaran, self).clean()
+            if melahirkans == 2:
+                raise ValidationError('kamar sudah penuh')
+
+
+KAMAR_CHOICES = (
+    ('1', '1'),
+    ('2', '2')
+)
+
+
+class Melahirkan(models.Model):
+    kamar = models.CharField(max_length=1, choices=KAMAR_CHOICES)
+    pendaftaran = models.ForeignKey(Pendaftaran)
+    sudah_pulang = models.BooleanField(default=False)
 
 JENIS_KELAMIN = (
     ('laki-laki', 'laki-laki'),
