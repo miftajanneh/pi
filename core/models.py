@@ -119,6 +119,12 @@ class Melahirkan(models.Model):
     pendaftaran = models.ForeignKey(Pendaftaran)
     sudah_pulang = models.BooleanField(default=False)
 
+    def __str__(self):
+        return UserProfile.objects.get(user=self.pendaftaran.pasien).nama_ibu
+
+    class Meta:
+        verbose_name_plural = 'Melahirkan'
+
 JENIS_KELAMIN = (
     ('laki-laki', 'laki-laki'),
     ('perempuan', 'perempuan')

@@ -222,9 +222,16 @@ class AlatKBAdmin(admin.ModelAdmin):
         'id'
     ]
 
+
+class MelahirkanAdmin(admin.ModelAdmin):
+    list_display = [
+        '__str__',
+        'kamar'
+    ]
+
 admin.site.register(KB, KBAdmin)
 admin.site.register(AlatKB, AlatKBAdmin)
 admin.site.register(Pendaftaran, PendaftaranAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(Imunisasi, ImunisasiAdmin)
-admin.site.register(Melahirkan)
+admin.site.register(Melahirkan, MelahirkanAdmin)
