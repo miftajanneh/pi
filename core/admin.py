@@ -26,7 +26,7 @@ class KBAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
-            return super(KBAdmin, self).get_readonly_fields(request, obj)
+            return ('tanggal_kontrol',)
         return (
             'pasien',
             'tanggal_mulai_pemakaian',

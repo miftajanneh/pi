@@ -79,7 +79,7 @@ class Pendaftaran(models.Model):
     pasien = models.ForeignKey(User)
     tanggal = models.DateField()
     tujuan_kunjungan = models.CharField(max_length=100, choices=TUJUAN_CHOICES)
-    urutan_kunjungan = models.IntegerField()
+    urutan_kunjungan = models.IntegerField(help_text='Selain melahirkan layanan dibuka pukul 10.00 - selesai')
 
     class Meta:
         verbose_name_plural = 'Pendaftaran'
