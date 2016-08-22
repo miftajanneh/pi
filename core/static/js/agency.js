@@ -28,6 +28,12 @@
         offset: {
             top: 100
         }
-    })
+    });
 
 })(jQuery); // End of use strict
+
+$(document).ready(function(){
+    $('label[for="id_username"]').text("Nama pengguna atau username");
+    $('input[id="id_username"]').attr("placeholder", "Nama pengguna atau username");
+});
+
