@@ -61,7 +61,7 @@ class MyUserCreationForm(UserCreationForm):
         user_profile = UserProfile.objects.create(user=user)
         user_profile.nama_anak = self.cleaned_data.get('nama_anak')
         user_profile.nama_ibu = self.cleaned_data.get('nama_ibu')
-        user_profile.nama_ayah = self.cleaned_data.get('nama_ayah')
+        user_profile.nama_ayah = self.cleaned_data.get('nama_ayah_atau_suami')
         user_profile.ibu_atau_anak = self.cleaned_data.get('ibu_atau_anak')
         user_profile.jenis_kelamin = self.cleaned_data.get('jenis_kelamin')
         user_profile.alamat = self.cleaned_data.get('alamat')
